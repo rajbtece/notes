@@ -1,0 +1,41 @@
+docker create <image>
+docker start
+docker logs <container_id>
+docker stop <container-id>  — gracefully stop (allow to clean up / 10 sec)
+docker kill <container-id> — Force kill
+
+docker 
+	restart policies
+	restart: “no”, always, on-failure, unless-stopped
+
+docker run -d redis
+
+docker-compose up
+
+docker-compose ps 
+
+docker-compose up
+docker-compose up --build
+
+docker-compose up -d
+docker-compose down
+
+
+- Kubernetes
+kubectl version
+kubectl cluster-info
+
+kubectl apply -f <client-pod.yaml>
+kubectl apply -f <client-node-port.yaml>
+kubectl delete -f client-pod.yaml
+
+kubectl get pods
+kubectl get services
+
+kubectl describe pod client-pod
+kubectl get deployments
+kubectl get pods -o wide
+
+
+kubectl set image deployment/client-deployment client=docker_id/image:version
+
