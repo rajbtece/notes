@@ -1,0 +1,30 @@
+About Nginx: https://www.nginx.com/resources/glossary/nginx/
+c10k: https://en.wikipedia.org/wiki/C10k_problem
+Trend: https://trends.google.com/trends/explore?date=all&q=nginx
+
+
+EPEL: https://docs.fedoraproject.org/en-US/epel/
+http://nginx.org/en/docs/configure.html
+https://www.freedesktop.org/wiki/Software/systemd/
+https://www.nginx.com/resources/wiki/start/topics/examples/initscripts/
+https://www.nginx.com/resources/wiki/start/topics/examples/systemd/
+http://nginx.org/en/docs/windows.html
+
+Section 3:
+  Variables:
+    http://nginx.org/en/docs/varindex.html
+    https://www.nginx.com/resources/wiki/start/topics/depth/ifisevil/
+  Log:
+    http://nginx.org/en/docs/ngx_core_module.html#error_log
+    http://nginx.org/en/docs/http/ngx_http_log_module.html
+    https://docs.nginx.com/nginx/admin-guide/monitoring/logging/
+  Buffers:
+    http://nginx.org/en/docs/syntax.html
+  Dyanmic Modules:
+    http://nginx.org/en/docs/http/ngx_http_image_filter_module.html
+Section 4:
+  Performance
+    http://nginx.org/en/docs/http/ngx_http_gzip_module.html
+    http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html
+    https://httpd.apache.org/docs/2.4/programs/ab.html
+    https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-16-04
