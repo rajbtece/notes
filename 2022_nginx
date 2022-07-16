@@ -28,3 +28,14 @@ Section 4:
     http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html
     https://httpd.apache.org/docs/2.4/programs/ab.html
     https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-16-04
+    https://www.nginx.com/blog/nginx-1-13-9-http2-server-push/
+    https://nghttp2.org/
+Section 5:
+  https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange
+  https://hackernoon.com/algorithms-explained-diffie-hellman-1034210d5100
+  
+  Rate Limiter:
+    https://www.joedog.org/siege-home/
+    https://www.freecodecamp.org/news/nginx-rate-limiting-in-a-nutshell-128fe9e0126c
+    https://www.nginx.com/blog/rate-limiting-nginx/
+    
