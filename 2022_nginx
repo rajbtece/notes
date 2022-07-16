@@ -38,4 +38,232 @@ Section 5:
     https://www.joedog.org/siege-home/
     https://www.freecodecamp.org/news/nginx-rate-limiting-in-a-nutshell-128fe9e0126c
     https://www.nginx.com/blog/rate-limiting-nginx/
+Section 6
+  Reverse Proxy:
+    https://www.php.net/manual/en/features.commandline.webserver.php
+    https://gist.github.com/willurd/5720255
     
+    https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/
+    http://nginx.org/en/docs/http/ngx_http_proxy_module.html
+    
+  Load Balancer:
+    http://nginx.org/en/docs/http/load_balancing.html
+    https://docs.nginx.com/nginx/admin-guide/load-balancer/http-load-balancer/
+    http://nginx.org/en/docs/http/ngx_http_upstream_module.html
+  Documentation and Resources:
+    http://nginx.org/en/docs/
+    https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/
+    https://codex.wordpress.org/Nginx
+    https://github.com/fcambus/nginx-resources
+Section 8:
+  Archives:
+    https://github.com/JasonGiedymin/nginx-init-ubuntu
+    https://www.nginx.com/resources/wiki/start/topics/examples/initscripts/
+  Geo IP:
+    https://dev.maxmind.com/geoip/release-notes/2018#discontinuation-of-the-geolite-legacy-databases
+    http://nginx.org/en/docs/http/ngx_http_geoip_module.html
+    
+Notes:
+
+cd /etc/nginx
+mkdit /etc/nginx/ssl/
+
+openssl req -x509 -days 10 -nodes -newkey rsa:2048 -keyout /etc/nginx/ssl/self.key -out /etc/nginx/ssl/self.crt 
+
+listen 443 ssl http2;
+ssl_certificate /etc/nginx/ssl/self.crt;
+ssl_certificate_key /etc/nginx/ssl/self.key;
+
+curl -Ik
+
+I - Header
+k - Ignore ssl failure
+
+
+apt-get install nghttp2-client
+nghttp -nysa
+
+n - doent save html file
+y - ignore self signed certificate error
+s - show statics <URL>
+a - associate assets
+
+systemctl reload nginx
+
+openssl dhparam 2048 -out /etc/nginx/ssl/dhparam.pem
+
+Enable HSTS
+Strict-Transport-Security "max-age=31536000" always;
+
+ssl_session_cache shared:SSL:40m
+ssl_session_timeout 4h;
+ssl_session_tickets on;
+
+nginx -t => validates configs
+
+Rate Limiter:
+siege -v -r 2 -c 5
+v = verbose
+r = request 
+c = connections
+
+limit_req_zone $server_name
+# limit no of request to server
+limit_req_zone $binary_remote_addr 
+# Client IP limiter / Per user
+limit_req_zone $request_uri
+
+limit_req_zone $request_uri zone=MYZONE:10m rate=60r/m
+
+
+Basic Auth
+apt-get install apache2-util
+
+htpasswd -c /etc/nginx/.htpasswd user1
+
+auth_basic "Secure Area"
+auth_basic_user_file /etc/nginx/.htpasswd
+
+
+Remove nginx version from Header
+server_tokens off;
+
+restrict iframe
+
+add_header X-Frame-Options "SAMEORIGIN";
+add_header X-XSS-Protection "1; mode=block";
+
+nginx -V => get current config
+--without-http_autoindex_module
+
+
+Lets Encrypt:
+
+apt-get update
+apt-get install nginx
+ps aux | grep nginx
+
+open config file:
+
+http {
+server{
+	listent 80;
+	server_name myserver.com
+	location / {
+		return 200 "Hello from Nginx";
+	}
+}
+}
+
+Install cert bot -
+Instruction from cert-bot site by selection version and os kernal
+
+certbot --nginx
+or
+certbot certonly -d <domain_name>
+
+renewal steps:
+
+certbot renew 
+certbot renew --dry-run
+
+crontab -e
+
+@daily certbot renew 
+ctrl + o = Save
+
+Section 6: Reverse Proxy
+	nginx -c <abs file path>
+	
+
+config file:
+	events {}
+	http {
+		server{
+			listen 8888;
+			location /php {
+			add_header proxied nginx; // Client Header
+			proxy_set_header proxied nginx; // to proxy server
+				proxy_pass 'http://localhost:9999/';
+			}
+		}
+	}
+
+nginx -s reload
+curl http://localhost:8888/php
+
+Load Balancer:
+
+	create 3 files with uniquie text
+	echo "From Server 1" > s1
+	echo "From Server 2" > s2
+	echo "From Server 3" > s3
+	
+	Created to demo load balance based on load
+	<?php 
+	sleep(20);
+	echo "Sleepy server finally done!\n";
+	
+	php -S localhost:10001 s1
+	php -S localhost:10002 s2
+	php -S localhost:10003 s3
+	
+load-balancer.conf
+	events{}
+	http{
+		upstream php_servers {
+			ip_hash; // Sticky session
+			// or
+			least_conn;
+			server localhost:10001;
+			server localhost:10002;
+			server localhost:10003;
+		}
+		server{
+			listen 8888;
+			location / {
+				proxy_pass http://php_servers/;
+			}
+		}
+	}
+	
+	
+Curl in while loop
+
+while sleep 0.5; do curl http://localhost:8888; done
+
+Section 8:
+
+	Archives / Init scripts
+		
+		cd /etc/init/
+		update-rc.d -f nginx defaults
+	Archives / Geo IP
+		apt-get install libgeoip-dev
+		mkdir /etc/nginx/geo/
+		wget <geo_ip_country>
+		weget <geo_ip_city>
+		
+		http {
+			geoip_country <path>;
+			geoip_city /etc/nginx/<path>;
+			
+			location /geo_country {
+				return 200 "Visiting from: $geoip_country_name";
+			}
+			
+			location /city {
+				return 200 ""
+			}
+		}
+		
+	Archives / MP4;
+	
+	location ~ \.mp4$ {
+		root /sites/downloads/;
+		mp4;
+		mp4_buffer_size 4M;
+		mp4_max_buffer_size 10M;
+	}
+	
+
