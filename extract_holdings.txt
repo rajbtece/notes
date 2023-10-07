@@ -37,22 +37,54 @@ let extractRow = async (node, delay = 1000) => {
                 console.log("Error: " + err);
             }
             var data = [name, dividentType, scheme, subType, invested, currentValue, units, avgNav, currentNav, xirr, profit, profitPer];
-
-            resolve(data.join("="));
+            transactions(node, name, dividentType, (err, results) => {
+                resolve({'data': data.join("="), 'transaction': results});
+            })
         }, delay);
     });
+}
+
+let transactions = async (node, name, type, cb) => {
+    node.querySelector('.main-container__detail--footer > div > div:nth-child(2) > div').click();
+    setTimeout(() => {
+        const data = [];
+        /**
+         * div.modal-body > div > div > div > table > tbody > tr
+         */
+        let trows = document.querySelectorAll('div.modal-body > div > div > div > table > tbody > tr')
+        trows.forEach( (t,i) => {
+            let date = '', days = '', amount = '', nav = '', units = '';
+            try {
+                date = t.childNodes[1].innerText;
+                days = t.childNodes[2].innerText.replace(/,/g, '');
+                amount = t.childNodes[3].innerText.replace(/,/g, '');
+                nav = t.childNodes[4].innerText.replace(/,/g, '');
+                units = t.childNodes[5].innerText.replace(/,/g, '');
+            } catch(err) {
+
+            }
+            let value = [name, type, date, days, amount, nav, units].join("=");
+data.push(value);
+        });
+        document.querySelector('.feather-x').click();
+        cb(undefined, data);
+    }, 1000);
 }
 
 
 async function processArray(holdings = []) {
     let results = [];
+    let transactions = [];
     for (let i = 0; i < holdings.length; i++) {
         const result = await extractRow(holdings[i]);
-        results.push(result);
+        results.push(result.data);
+        transactions = transactions.concat(result.transaction);
     }
     var _data = "\n\nFund=Type=Scheme=SubType=Invested=Current=Unit=Avg Nav=Current Nav=XIRR=Profit=Percentage\n"
         + results.sort().join("\n");
     console.log(_data);
+    console.log("\n====================== transactions ======================\n");
+    console.log("\n\nFund=Type=Date=Days=Amount=NAV=Units\n" + transactions.join("\n"));
 }
 
 processArray(list_of_holdings);
