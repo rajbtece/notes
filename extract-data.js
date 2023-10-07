@@ -4,7 +4,7 @@ var [head, ...list_of_sips] = document.querySelectorAll("#app > div:nth-child(2)
 // .forEach( (n,i) => console.log(n.innerText.replace(/\n/g, "=")))
 
 
-var _data = "\n\nfund=type=category=sub-category=frequency=amount=status\n" + list_of_sips.slice(1).map( (n,i) => {
+var _data = "\n\nfund=type=category=sub-category=frequency=amount=status\n" + list_of_sips.map( (n,i) => {
 const name = n.querySelector('.fund-name').innerText;
 const meta = n.querySelector('.fund-metasubtext__container');
 const type = meta.childNodes[0].textContent;
