@@ -37,14 +37,14 @@ let extractRow = async (node, delay = 1000) => {
                 console.log("Error: " + err);
             }
             var data = [name, dividentType, scheme, subType, invested, currentValue, units, avgNav, currentNav, xirr, profit, profitPer];
-            transactions(node, name, dividentType, (err, results) => {
+            transactions(node, name, dividentType, currentNav, (err, results) => {
                 resolve({'data': data.join("="), 'transaction': results});
             })
         }, delay);
     });
 }
 
-let transactions = async (node, name, type, cb) => {
+let transactions = async (node, name, type, currentNav, cb) => {
     node.querySelector('.main-container__detail--footer > div > div:nth-child(2) > div').click();
     setTimeout(() => {
         const data = [];
@@ -52,18 +52,23 @@ let transactions = async (node, name, type, cb) => {
          * div.modal-body > div > div > div > table > tbody > tr
          */
         let trows = document.querySelectorAll('div.modal-body > div > div > div > table > tbody > tr')
+        let r = /^(\d+)\w+\s(\w+)\s(\d{4})/
         trows.forEach( (t,i) => {
-            let date = '', days = '', amount = '', nav = '', units = '';
+            let date = '', days = '', amount = '', nav = '', units = '', currentPrice = '', profit='';
             try {
                 date = t.childNodes[1].innerText;
+                let m = date.match(r);
+                date = m[1]+'/'+m[2]+'/'+m[3];
                 days = t.childNodes[2].innerText.replace(/,/g, '');
                 amount = t.childNodes[3].innerText.replace(/,/g, '');
                 nav = t.childNodes[4].innerText.replace(/,/g, '');
                 units = t.childNodes[5].innerText.replace(/,/g, '');
+                currentPrice = (units * currentNav).toFixed(2);
+                profit = (currentPrice - amount).toFixed(2);
             } catch(err) {
 
             }
-            let value = [name, type, date, days, amount, nav, units].join("=");
+            let value = [name, type, date, days, amount, nav, units, currentNav, currentPrice, profit].join("=");
 data.push(value);
         });
         document.querySelector('.feather-x').click();
@@ -84,7 +89,10 @@ async function processArray(holdings = []) {
         + results.sort().join("\n");
     console.log(_data);
     console.log("\n====================== transactions ======================\n");
-    console.log("\n\nFund=Type=Date=Days=Amount=NAV=Units\n" + transactions.join("\n"));
+    console.log("\n\nFund=Type=Date=Days=Amount=NAV=Units=Current NAV=Current Price=Profit\n" + transactions.join("\n"));
 }
 
 processArray(list_of_holdings);
+
+
+processArray([list_of_holdings[0]])
