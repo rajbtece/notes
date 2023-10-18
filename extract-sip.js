@@ -27,7 +27,7 @@ const extractRow = async (n, delay = 1000) => {
             } catch (err) {
                 console.log(err);
             }
-            let data = [name, type, category, subCategory, frequency, sipAmount, isbn];
+            let data = [isbn, name, type, category, subCategory, frequency, sipAmount];
             resolve({ 'data': data.join("="), 'transaction': [] });
         }, delay);
     });
@@ -39,7 +39,7 @@ const process = async (sips = []) => {
         const result = await extractRow(sips[i]);
         results.push(result.data);
     }
-    let _data = "\n\nFund=Type=Category=Sub Category=Frequency=Amount=ISIN\n" + results.join("\n");
+    let _data = "\n\nISIN=Fund=Type=Category=Sub Category=Frequency=Amount\n" + results.join("\n");
     console.log(_data);
 }
 
