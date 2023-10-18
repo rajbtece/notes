@@ -18,6 +18,7 @@ let extractRow = async (node, trans, delay = 1000) => {
             let xirr = "";
             let profit = "";
             let profitPer = 0;
+            let symbol = "";
             try {
                 name = node.querySelector('.fund-name').innerText;
                 dividentType = node.querySelector('.dividend-type').innerText;
@@ -33,10 +34,11 @@ let extractRow = async (node, trans, delay = 1000) => {
                 xirr = bodyRows[5].querySelector('.text-regular').innerText.replace(/,/g, '');
                 profit = node.querySelector('.quantity-container').childNodes[1].innerText.replace(/,/g, '');
                 profitPer = node.querySelector('.quantity-container').childNodes[3].innerText;
+                symbol = node.querySelector('.fund-name > a').href.split('/')[5];
             } catch (err) {
                 console.log("Error: " + err);
             }
-            var data = [name, dividentType, scheme, subType, invested, currentValue, units, avgNav, currentNav, xirr, profit, profitPer];
+            var data = [symbol, name, dividentType, scheme, subType, invested, currentValue, units, avgNav, currentNav, xirr, profit, profitPer];
             if (trans === true) {
                 transactions(node, name, dividentType, currentNav, (err, results) => {
                     resolve({ 'data': data.join("="), 'transaction': results });
@@ -89,7 +91,7 @@ async function processArray(holdings = [], trans = false) {
         results.push(result.data);
         transactions = transactions.concat(result.transaction);
     }
-    var _data = "\n\nFund=Type=Scheme=SubType=Invested=Current=Unit=Avg Nav=Current Nav=XIRR=Profit=Percentage\n"
+    var _data = "\n\nSymbol=Fund=Type=Scheme=SubType=Invested=Current=Unit=Avg Nav=Current Nav=XIRR=Profit=Percentage\n"
         + results.sort().join("\n");
     console.log(_data);
     if (trans === true) {
