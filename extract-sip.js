@@ -1,7 +1,7 @@
 // S P
 var [head, ...list_of_sips] = document.querySelectorAll("#app > div:nth-child(2) > div.container.body-container.main-body-container > div > div > div.mf-table__container--desktop > div > ul > li");
 
-const extractRow = async (n, delay = 1000) => {
+let extractRow = async (n, delay = 1000) => {
     console.log("Fund Name: " + n.querySelector('.fund-name').innerText + "; " + Date.now());
     if (n.querySelector('.fund-row__container--overview') !== null) {
         n.querySelector(".fund-name").click();
@@ -33,7 +33,7 @@ const extractRow = async (n, delay = 1000) => {
     });
 }
 
-const process = async (sips = []) => {
+let process = async (sips = []) => {
     let results = [];
     for (let i = 0; i < sips.length; i++) {
         const result = await extractRow(sips[i]);
