@@ -74,7 +74,7 @@ let transactions = async (node, name, type, currentNav, cb) => {
                 profitPer = (1-(amount/currentPrice)).toFixed(2);
             } catch (err) {
             }
-            let value = [name, type, date, days, amount, nav, units, currentNav, currentPrice, profit, profitPer].join("=");
+            let value = [name, type, date, days, amount, units, nav, currentNav, currentPrice, profit, profitPer].join("=");
             data.push(value);
         });
         document.querySelector('.feather-x').click();
@@ -96,7 +96,7 @@ async function processArray(holdings = [], trans = false) {
     console.log(_data);
     if (trans === true) {
         console.log("\n====================== transactions ======================\n");
-        console.log("\n\nFund=Type=Date=Days=Amount=NAV=Units=Current NAV=Current Price=Profit=Percentage\n" + transactions.join("\n"));
+        console.log("\n\nFund=Type=Date=Days=Amount=Units=NAV=Current NAV=Current Price=Profit=Percentage\n" + transactions.join("\n"));
     }
 }
 
