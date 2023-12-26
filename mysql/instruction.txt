@@ -1,0 +1,19 @@
+#https://dev.mysql.com/blog-archive/docker-compose-setup-for-innodb-cluster/#:~:text=The%20docker%2Dcompose.,up%20the%20cluster%20and%20databases.
+#https://github.com/neumayer/mysql-docker-compose-examples/blob/master/innodb-cluster/scripts/setupCluster.js
+
+var dbPass = "mysql"
+var clusterName = "devCluster"
+
+try {
+  print('Setting up InnoDB cluster...\n');
+  shell.connect('root@mysql-server-1:3306', dbPass)
+  var cluster = dba.createCluster(clusterName);
+  print('Adding instances to the cluster.');
+  cluster.addInstance({user: "root", host: "mysql-server-2", password: dbPass})
+  print('.');
+  cluster.addInstance({user: "root", host: "mysql-server-3", password: dbPass})
+  print('.\nInstances successfully added to the cluster.');
+  print('\nInnoDB cluster deployed successfully.\n');
+} catch(e) {
+  print('\nThe InnoDB cluster could not be created.\n\nError: ' + e.message + '\n');
+}
