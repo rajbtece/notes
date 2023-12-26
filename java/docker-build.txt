@@ -1,0 +1,60 @@
+Dockerfile
+>>>
+FROM openjdk:17
+EXPOSE 8080
+EXPOSE 8081
+COPY target/appname.jar app.jar
+#ENTRYPOINT ["java", "-jar","/app.jar"]
+ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar /app.jar"]
+<<<
+
+K8S
+- Service
+>>>
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-name
+spec:
+  type: LoadBalancer
+  selector:
+    app: app-name
+  ports:
+    - port: 8080
+      targetPort: 8080
+<<<
+
+- Deployment
+>>>
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+	name: app-name
+spec:
+	replicas: 3
+	selector:
+		matchLabels:
+			app: app-name
+	template:
+		metadata:
+			labels:
+				app: app-name
+		spec:
+			containers:
+				-	name: app-name
+					image: local/image-name
+					imagePullPolicy: Never
+					evn:
+					-	name: MYSQL_HOST
+						value: 172.17.0.2
+					resources:
+						limits:
+							memory: "1024Mi"
+							cpu: "1000m"
+					ports:
+						-containerPort: 8080
+<<<
+
+Build Command: docker build -t local/app-name .
+kubectl apply -f app-deployment.yaml
+kubectl apply -f app-service.yml
