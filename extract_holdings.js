@@ -40,7 +40,7 @@ let extractRow = async (node, trans, delay = 1000) => {
             }
             var data = [symbol, name, dividentType, scheme, subType, invested, currentValue, units, avgNav, currentNav, xirr, profit, profitPer];
             if (trans === true) {
-                transactions(node, name, dividentType, currentNav, (err, results) => {
+                transactions(node, symbol, name, dividentType, currentNav, (err, results) => {
                     resolve({ 'data': data.join("="), 'transaction': results });
                 })
             } else {
@@ -50,7 +50,7 @@ let extractRow = async (node, trans, delay = 1000) => {
     });
 }
 
-let transactions = async (node, name, type, currentNav, cb) => {
+let transactions = async (node, symbol, name, type, currentNav, cb) => {
     node.querySelector('.main-container__detail--footer > div > div:nth-child(2) > div').click();
     setTimeout(() => {
         const data = [];
@@ -74,7 +74,7 @@ let transactions = async (node, name, type, currentNav, cb) => {
                 profitPer = (1-(amount/currentPrice)).toFixed(2);
             } catch (err) {
             }
-            let value = [name, type, date, days, amount, units, nav, currentNav, currentPrice, profit, profitPer].join("=");
+            let value = [symbol, name, type, date, days, amount, units, nav, currentNav, currentPrice, profit, profitPer].join("=");
             data.push(value);
         });
         document.querySelector('.feather-x').click();
@@ -96,7 +96,7 @@ async function processArray(holdings = [], trans = false) {
     console.log(_data);
     if (trans === true) {
         console.log("\n====================== transactions ======================\n");
-        console.log("\n\nFund=Type=Date=Days=Amount=Units=NAV=Current NAV=Current Price=Profit=Percentage\n" + transactions.join("\n"));
+        console.log("\n\nSymbol=Fund=Type=Date=Days=Amount=Units=NAV=Current NAV=Current Price=Profit=Percentage\n" + transactions.join("\n"));
     }
 }
 
