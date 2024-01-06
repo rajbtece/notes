@@ -64,7 +64,7 @@ let transactions = async (node, symbol, name, type, currentNav, cb) => {
             try {
                 date = t.childNodes[1].innerText;
                 let m = date.match(r);
-                date = m[1] + '/' + m[2] + '/' + m[3];
+                date = m[3] + '/' + m[2] + '/' + m[1];
                 days = t.childNodes[2].innerText.replace(/,/g, '');
                 amount = t.childNodes[3].innerText.replace(/,/g, '');
                 nav = t.childNodes[4].innerText.replace(/,/g, '');
@@ -93,11 +93,30 @@ async function processArray(holdings = [], trans = false) {
     }
     var _data = "\n\nSymbol=Fund=Type=Scheme=SubType=Invested=Current=Unit=Avg Nav=Current Nav=XIRR=Profit=Percentage\n"
         + results.sort().join("\n");
+        updateHolding(results.sort().join("\n"));
     console.log(_data);
     if (trans === true) {
         console.log("\n====================== transactions ======================\n");
         console.log("\n\nSymbol=Fund=Type=Date=Days=Amount=Units=NAV=Current NAV=Current Price=Profit=Percentage\n" + transactions.join("\n"));
+        updateHoldingTransactions(transactions.join("\n"));
     }
 }
 
 processArray(list_of_holdings, false);
+
+const updateHolding = async (data) => {
+    const url = 'http://localhost:8080/zerodha/holding';
+    return await api(url, data);
+}
+
+const updateHoldingTransactions = async (data) => {
+    const url = 'http://localhost:8080/zerodha/holding_transaction';
+    return await api(url, data);
+}
+
+
+const api = async (url, data) => {
+    const response = await fetch(url, { method: "POST", mode: "cors", cache: "no-cache", headers: {}, referrerPolicy: "no-referrer", body: data});
+    const result = response.json();
+    return result;
+}
