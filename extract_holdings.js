@@ -1,3 +1,7 @@
+document.querySelector('#app > div.section.menu-header > div > div > div > div:nth-child(2) > div > a:nth-child(4) > span').click();
+
+
+
 var [head, ...list_of_holdings] = document.querySelector("#app > div:nth-child(2) > div.container.body-container.main-body-container > div > div > div > div.mf-table__container--desktop > div > ul").childNodes;
 
 let extractRow = async (node, trans, delay = 1000) => {
@@ -38,7 +42,7 @@ let extractRow = async (node, trans, delay = 1000) => {
             } catch (err) {
                 console.log("Error: " + err);
             }
-            var data = [symbol, name, dividentType, scheme, subType, invested, currentValue, units, avgNav, currentNav, xirr, profit, profitPer];
+            var data = [symbol, name, dividentType, scheme, subType, invested, currentValue, units, avgNav, currentNav, xirr, profit, profitPer, window.clientId];
             if (trans === true) {
                 transactions(node, symbol, name, dividentType, currentNav, (err, results) => {
                     resolve({ 'data': data.join("="), 'transaction': results });
@@ -74,7 +78,7 @@ let transactions = async (node, symbol, name, type, currentNav, cb) => {
                 profitPer = (1-(amount/currentPrice)).toFixed(2);
             } catch (err) {
             }
-            let value = [symbol, name, type, date, days, amount, units, nav, currentNav, currentPrice, profit, profitPer].join("=");
+            let value = [symbol, name, type, date, days, amount, units, nav, currentNav, currentPrice, profit, profitPer, window.clientId].join("=");
             data.push(value);
         });
         document.querySelector('.feather-x').click();
@@ -91,18 +95,22 @@ async function processArray(holdings = [], trans = false) {
         results.push(result.data);
         transactions = transactions.concat(result.transaction);
     }
-    var _data = "\n\nSymbol=Fund=Type=Scheme=SubType=Invested=Current=Unit=Avg Nav=Current Nav=XIRR=Profit=Percentage\n"
+    var _data = "\n\nSymbol=Fund=Type=Scheme=SubType=Invested=Current=Unit=Avg Nav=Current Nav=XIRR=Profit=Percentage=ClientId\n"
         + results.sort().join("\n");
         updateHolding(results.sort().join("\n"));
     console.log(_data);
     if (trans === true) {
         console.log("\n====================== transactions ======================\n");
-        console.log("\n\nSymbol=Fund=Type=Date=Days=Amount=Units=NAV=Current NAV=Current Price=Profit=Percentage\n" + transactions.join("\n"));
+        console.log("\n\nSymbol=Fund=Type=Date=Days=Amount=Units=NAV=Current NAV=Current Price=Profit=Percentage=ClientId\n" + transactions.join("\n"));
         updateHoldingTransactions(transactions.join("\n"));
     }
 }
 
-processArray(list_of_holdings, false);
+setTimeout(() => {
+    window.clientId = document.querySelector('.client-id').innerText;
+    processArray(list_of_holdings, true);
+}, 1000);
+
 
 const updateHolding = async (data) => {
     const url = 'http://localhost:8080/zerodha/holding';
