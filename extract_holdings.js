@@ -1,10 +1,7 @@
 document.querySelector('#app > div.section.menu-header > div > div > div > div:nth-child(2) > div > a:nth-child(4) > span').click();
-
-
-
 var [head, ...list_of_holdings] = document.querySelector("#app > div:nth-child(2) > div.container.body-container.main-body-container > div > div > div > div.mf-table__container--desktop > div > ul").childNodes;
 
-let extractRow = async (node, trans, delay = 1000) => {
+let extractRow = async (node, trans, delay = 2000) => {
     if (node.querySelector('.dividend-type') === null) {
         node.querySelector(".fund-name").click();
     }
@@ -39,6 +36,7 @@ let extractRow = async (node, trans, delay = 1000) => {
                 profit = node.querySelector('.quantity-container').childNodes[1].innerText.replace(/,/g, '');
                 profitPer = node.querySelector('.quantity-container').childNodes[3].innerText;
                 symbol = node.querySelector('.fund-name > a').href.split('/')[5];
+                latestNav(symbol);
             } catch (err) {
                 console.log("Error: " + err);
             }
@@ -86,7 +84,6 @@ let transactions = async (node, symbol, name, type, currentNav, cb) => {
     }, 1000);
 }
 
-
 async function processArray(holdings = [], trans = false) {
     let results = [];
     let transactions = [];
@@ -122,6 +119,11 @@ const updateHoldingTransactions = async (data) => {
     return await api(url, data);
 }
 
+const latestNav = (symbol) => {
+    fetch(`https://staticassets.zerodha.com/coin/historical-nav/${symbol}.json`).then(r =>r.json())
+    .then(x => fetch(`http://localhost:8080/zerodha/historical-nav?symbol=${symbol}`, 
+    {'method': 'POST', 'headers': {"Content-Type": "application/json"}, body: JSON.stringify(x)}).then(m => console.log(m)));
+}
 
 const api = async (url, data) => {
     const response = await fetch(url, { method: "POST", mode: "cors", cache: "no-cache", headers: {}, referrerPolicy: "no-referrer", body: data});
