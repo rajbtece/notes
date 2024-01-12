@@ -1,7 +1,7 @@
 document.querySelector('#app > div.section.menu-header > div > div > div > div:nth-child(2) > div > a:nth-child(4) > span').click();
 var [head, ...list_of_holdings] = document.querySelector("#app > div:nth-child(2) > div.container.body-container.main-body-container > div > div > div > div.mf-table__container--desktop > div > ul").childNodes;
 
-let extractRow = async (node, trans, delay = 2000) => {
+let extractRow = async (node, trans, delay = 2000, apiMode = false) => {
     if (node.querySelector('.dividend-type') === null) {
         node.querySelector(".fund-name").click();
     }
@@ -36,7 +36,9 @@ let extractRow = async (node, trans, delay = 2000) => {
                 profit = node.querySelector('.quantity-container').childNodes[1].innerText.replace(/,/g, '');
                 profitPer = node.querySelector('.quantity-container').childNodes[3].innerText;
                 symbol = node.querySelector('.fund-name > a').href.split('/')[5];
-                latestNav(symbol);
+                if ( apiMode === true) {
+                    latestNav(symbol);
+                }
             } catch (err) {
                 console.log("Error: " + err);
             }
@@ -84,28 +86,32 @@ let transactions = async (node, symbol, name, type, currentNav, cb) => {
     }, 1000);
 }
 
-async function processArray(holdings = [], trans = false) {
+async function processArray(holdings = [], trans = false, apiMode = false) {
     let results = [];
     let transactions = [];
     for (let i = 0; i < holdings.length; i++) {
-        const result = await extractRow(holdings[i], trans);
+        const result = await extractRow(holdings[i], trans, 2000, apiMode);
         results.push(result.data);
         transactions = transactions.concat(result.transaction);
     }
     var _data = "\n\nSymbol=Fund=Type=Scheme=SubType=Invested=Current=Unit=Avg Nav=Current Nav=XIRR=Profit=Percentage=ClientId\n"
         + results.sort().join("\n");
+    if ( apiMode === true) {
         updateHolding(results.sort().join("\n"));
+    }
     console.log(_data);
     if (trans === true) {
         console.log("\n====================== transactions ======================\n");
         console.log("\n\nSymbol=Fund=Type=Date=Days=Amount=Units=NAV=Current NAV=Current Price=Profit=Percentage=ClientId\n" + transactions.join("\n"));
-        updateHoldingTransactions(transactions.join("\n"));
+        if ( apiMode === true) {
+            updateHoldingTransactions(transactions.join("\n"));
+        }
     }
 }
 
 setTimeout(() => {
     window.clientId = document.querySelector('.client-id').innerText;
-    processArray(list_of_holdings, true);
+    processArray(list_of_holdings, true, false);
 }, 1000);
 
 
