@@ -5,7 +5,7 @@ let extractRow = async (node, trans, delay = 2000, apiMode = false) => {
     if (node.querySelector('.dividend-type') === null) {
         node.querySelector(".fund-name").click();
     }
-    console.log("Fund Name: " + node.querySelector('.fund-name').innerText + "; " + Date.now());
+    
     return new Promise((resolve) => {
         setTimeout(() => {
             let name = "";
@@ -36,6 +36,7 @@ let extractRow = async (node, trans, delay = 2000, apiMode = false) => {
                 profit = node.querySelector('.quantity-container').childNodes[1].innerText.replace(/,/g, '');
                 profitPer = node.querySelector('.quantity-container').childNodes[3].innerText;
                 symbol = node.querySelector('.fund-name > a').href.split('/')[5];
+                console.log("Fund Name: " + node.querySelector('.fund-name').innerText + "; Symbol: " + symbol + ", Date: " + Date.now());
                 if ( apiMode === true) {
                     latestNav(symbol);
                 }
@@ -90,7 +91,7 @@ async function processArray(holdings = [], trans = false, apiMode = false) {
     let results = [];
     let transactions = [];
     for (let i = 0; i < holdings.length; i++) {
-        const result = await extractRow(holdings[i], trans, 2000, apiMode);
+        const result = await extractRow(holdings[i], trans, 5000, apiMode);
         results.push(result.data);
         transactions = transactions.concat(result.transaction);
     }
@@ -111,7 +112,7 @@ async function processArray(holdings = [], trans = false, apiMode = false) {
 
 setTimeout(() => {
     window.clientId = document.querySelector('.client-id').innerText;
-    processArray(list_of_holdings, true, false);
+    processArray(list_of_holdings, true, true);
 }, 1000);
 
 
