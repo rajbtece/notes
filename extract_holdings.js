@@ -87,15 +87,29 @@ let transactions = async (node, symbol, name, type, currentNav, cb) => {
     }, 1000);
 }
 
+let filters = [
+    "Tata Nifty500 Multicap India Manufacturing 50 30 20 Index Fund-Direct Plan",
+    "Groww Nifty Non-Cyclical Consumer Index Fund",
+    "Nippon India Nifty Smallcap 250 Index Fund",
+    "Mahindra Manulife Small Cap Fund",
+    "SBI Automotive Opportunities Fund",
+    "SBI Energy Opportunities Fund",
+    "Bandhan Multi Asset Allocation Fund",
+    "Sundaram Multi Asset Allocation Fund"
+    
+];
 async function processArray(holdings = [], trans = false, apiMode = false) {
     let results = [];
     let transactions = [];
     for (let i = 0; i < holdings.length; i++) {
-        const result = await extractRow(holdings[i], trans, 5000, apiMode);
-        results.push(result.data);
-        transactions = transactions.concat(result.transaction);
+        let name = holdings[i].querySelector('.fund-name').innerText;
+        if ( filters.length == 0 || filters.includes(name) ) {
+            const result = await extractRow(holdings[i], trans, 5000, apiMode);
+            results.push(result.data);
+            transactions = transactions.concat(result.transaction);
+        } 
     }
-    var _data = "\n\nSymbol=Fund=Type=Scheme=SubType=Invested=Current=Unit=Avg Nav=Current Nav=XIRR=Profit=Percentage=ClientId\n"
+    var _data = "\n\nSymbol=Fund=Type=Scheme=SubType=Invested=Current=U nit=Avg Nav=Current Nav=XIRR=Profit=Percentage=ClientId\n"
         + results.sort().join("\n");
     if ( apiMode === true) {
         updateHolding(results.sort().join("\n"));
@@ -112,7 +126,8 @@ async function processArray(holdings = [], trans = false, apiMode = false) {
 
 setTimeout(() => {
     window.clientId = document.querySelector('.client-id').innerText;
-    processArray(list_of_holdings, true, true);
+    //processArray(list_of_holdings, true, true);
+    processArray(list_of_holdings, true, false);
 }, 1000);
 
 
