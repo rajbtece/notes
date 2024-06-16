@@ -70,6 +70,7 @@ let transactions = async (node, symbol, name, type, currentNav, cb) => {
                 date = t.childNodes[1].innerText;
                 let m = date.match(r);
                 date = m[3] + '/' + m[2] + '/' + m[1];
+                date = convertToYYYYMMDD(date);
                 days = t.childNodes[2].innerText.replace(/,/g, '');
                 amount = t.childNodes[3].innerText.replace(/,/g, '');
                 nav = t.childNodes[4].innerText.replace(/,/g, '');
@@ -151,4 +152,22 @@ const api = async (url, data) => {
     const response = await fetch(url, { method: "POST", mode: "cors", cache: "no-cache", headers: {}, referrerPolicy: "no-referrer", body: data});
     const result = response.json();
     return result;
+}
+
+function convertToYYYYMMDD(dateStr) {
+  // Remove ordinal suffixes like 'st', 'nd', 'rd', 'th'
+  const cleanedDateStr = dateStr.replace(/(\d+)(st|nd|rd|th)/, '$1');
+  
+  // Parse the cleaned date string
+  const date = new Date(cleanedDateStr);
+  
+  if (isNaN(date)) {
+    return 'Invalid Date';
+  }
+  
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
 }
